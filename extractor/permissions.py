@@ -1,5 +1,5 @@
 """
-    Extractor application permissions
+    Extractor Application Permissions
     extractor/permissions.py
 """
 

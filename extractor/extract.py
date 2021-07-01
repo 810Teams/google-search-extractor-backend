@@ -1,5 +1,5 @@
 """
-    Extractor application extraction script
+    Extractor Application Extraction Script
     extractor/extract.py
 
     Source

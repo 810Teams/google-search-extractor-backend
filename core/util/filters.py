@@ -1,5 +1,5 @@
 """
-    Core application filters utility
+    Core Application Filters Utility
     core/util/filters.py
 """
 

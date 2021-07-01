@@ -1,3 +1,8 @@
+"""
+    Extractor Application App Config
+    extractor/admin.py
+"""
+
 from django.apps import AppConfig
 
 

@@ -1,5 +1,5 @@
 """
-    Extractor application URLs
+    Extractor Application URLs
     extractor/urls.py
 """
 

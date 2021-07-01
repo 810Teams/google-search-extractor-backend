@@ -1,3 +1,8 @@
+"""
+    Core Application App Config
+    core/admin.py
+"""
+
 from django.apps import AppConfig
 
 

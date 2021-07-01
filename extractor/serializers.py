@@ -1,5 +1,5 @@
 """
-    Extractor application serializers
+    Extractor Application Serializers
     extractor/serializers.py
 """
 

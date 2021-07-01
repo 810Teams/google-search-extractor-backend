@@ -1,5 +1,5 @@
 """
-    Core application loaders utility
+    Core Application Loaders UStility
     core/util/loaders.py
 """
 

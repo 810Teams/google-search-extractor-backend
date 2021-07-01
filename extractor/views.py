@@ -1,5 +1,5 @@
 """
-    Extractor application views
+    Extractor Application Views
     extractor/views.py
 """
 

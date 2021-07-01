@@ -1,5 +1,5 @@
 """
-    Core application objects utility
+    Core Application Objects Utility
     core/util/objects.py
 """
 

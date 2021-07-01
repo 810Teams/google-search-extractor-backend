@@ -1,5 +1,5 @@
 """
-    Extractor application models
+    Extractor Application Models
     extractor/models.py
 """
 

@@ -15,6 +15,8 @@ from corsheaders.defaults import default_headers
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from core.util.loaders import load_project_path
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -43,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'core',
+    'extractor',
     'user',
     'corsheaders'
 ]
@@ -60,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'crum.CurrentRequestUserMiddleware'
 ]
 
 ROOT_URLCONF = 'google_search_extractor_backend.urls'
@@ -144,3 +149,8 @@ AUTH_USER_MODEL = 'user.User'
 # Storage Settings
 
 STORAGE_BASE_DIR = 'storage'
+
+# Media Path Settings
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = load_project_path()

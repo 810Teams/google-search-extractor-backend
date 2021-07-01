@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheader'
+    'corsheaders'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

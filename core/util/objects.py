@@ -6,13 +6,6 @@
 from crum import get_current_user
 
 
-def get_file_extension(file_name):
-    """ Returns a file extension """
-    if isinstance(file_name, str) and len(file_name.split('.')) > 1:
-        return file_name.split('.')[-1].lower()
-    return None
-
-
 def save_user_attributes(obj, created_by_field_name='created_by', updated_by_field_name='updated_by'):
     ''' Save user-related attributes of the object '''
     user = get_current_user()

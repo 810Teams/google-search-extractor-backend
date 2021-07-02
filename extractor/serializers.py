@@ -14,7 +14,7 @@ class NotExistingScrapeResultSerializer(serializers.ModelSerializer):
         """ Meta """
         model = ScrapeResult
         fields = '__all__'
-        read_only_fields = ('user',)
+        read_only_fields = ('keyword_amount', 'user')
 
 
 class ExistingScrapeResultSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class ExistingScrapeResultSerializer(serializers.ModelSerializer):
         """ Meta """
         model = ScrapeResult
         fields = '__all__'
-        read_only_fields = ('keywords_file', 'user',)
+        read_only_fields = ('keywords_file', 'keyword_amount', 'user')
 
 
 class ScrapeResultPageSerializer(serializers.ModelSerializer):

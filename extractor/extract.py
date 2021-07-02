@@ -61,9 +61,10 @@ def scrape_results(query, page=None):
 
     # Page data structure
     result_page = {
+        'response': response,
         'result_amount': None,
         'time_taken': None,
-        'ads_list': list(),
+        'ad_list': list(),
         'result_list': list()
     }
     if isinstance(page, int):
@@ -80,7 +81,7 @@ def scrape_results(query, page=None):
 
     for ads in ads_list:
         try:
-            result_page['ads_list'].append({
+            result_page['ad_list'].append({
                 'title': ads.find('.cfxYMc.JfZTW.c4Djg.MUxGbd.v0nnCb', first=True).text,
                 'url': ads.find('.Krnil', first=True).attrs['href'],
                 'text': ads.find('.MUxGbd.yDYNvb.lyLwlc', first=True).text
@@ -100,21 +101,3 @@ def scrape_results(query, page=None):
 
     # Returning
     return result_page
-
-
-def scrape_results_all_pages(query):
-    """ Scrape Google search result all pages of a query """
-    output = list()
-    page = 1
-
-    while True:
-        result_page = scrape_results(query, page=page)
-        if len(result_page['ads_list']) + len(result_page['result_list']) == 0:
-            break
-        output.append(result_page)
-        page += 1
-
-    return output
-
-
-print(scrape_results('mass-searching keywords google'))

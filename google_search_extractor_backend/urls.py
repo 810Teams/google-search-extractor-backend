@@ -22,5 +22,6 @@ from google_search_extractor_backend import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('extractor/', include('extractor.urls'))
+    path('api/extractor/', include('extractor.urls')),
+    path('api/user/', include('user.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

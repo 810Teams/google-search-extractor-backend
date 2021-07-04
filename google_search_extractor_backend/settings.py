@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cleanup.apps.CleanupConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'core',
@@ -167,3 +168,7 @@ STORAGE_BASE_DIR = 'storage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = load_project_path()
+
+# Scraping Settings
+
+DELAY_BETWEEN_PAGES = 2

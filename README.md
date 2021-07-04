@@ -19,6 +19,7 @@ pip install django
 pip install djangorestframework
 pip install django-cors-headers
 pip install django-crum
+pip install django-cleanup
 pip install requests_html
 ```
 
@@ -138,7 +139,7 @@ Use `GET /api/extractor/scrape-result/item` to list scrape result items, require
 Use `GET /api/extractor/scrape-result/item/<int>` to retrieve a single scrape result item by ID, requires authentication, and only own results can be retrieved in this way.
 
 ## Caution
-Although generating scrape result pages is being executed in a separate thread and has 2 seconds delay between each page, using `POST /api/extractor/scrape-result` with multiple keywords too many times may result in a response code of `429` from Google. If that occurs, stop using it, and wait for at least an hour before trying again.
+Although generating scrape result pages is being executed in a separate thread and has 2 seconds (configurable) delay between each page, using `POST /api/extractor/scrape-result` with multiple keywords too many times may result in a response code of `429` from Google. If that occurs, stop using it, and wait for at least an hour before trying again.
 
 ## Members
 |<img src="https://avatars.githubusercontent.com/u/26340809?v=4" width="150px">|

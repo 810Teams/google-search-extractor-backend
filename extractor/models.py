@@ -2,6 +2,7 @@
     Extractor Application Models
     extractor/models.py
 """
+
 import threading
 import time
 
@@ -12,7 +13,7 @@ from django.db import models
 from core.util.objects import save_user_attributes
 from core.util.misc import get_file_extension, get_simpler_datetime
 from extractor.extract import scrape_results
-from google_search_extractor_backend.settings import STORAGE_BASE_DIR
+from google_search_extractor_backend.settings import STORAGE_BASE_DIR, DELAY_BETWEEN_PAGES
 
 
 class ScrapeResult(models.Model):
@@ -23,12 +24,12 @@ class ScrapeResult(models.Model):
 
     def get_report_path(self, _):
         """ Get uploaded keywords file path """
-        return '{}/scrape_result/{}/report.txt'.format(STORAGE_BASE_DIR, self.id)
+        return '{}/scrape_result/{}/report.xml'.format(STORAGE_BASE_DIR, self.id)
 
     # Files
     keywords_file = models.FileField(upload_to=get_keywords_file_path, null=False, blank=False)
     keyword_amount = models.IntegerField(null=False, blank=True)
-    # TODO: Implement report field
+    report = models.FileField(upload_to=get_report_path, null=True, blank=True)
 
     # Stamps
     user = models.ForeignKey(get_user_model(), null=True, on_delete=models.SET_NULL)
@@ -49,14 +50,12 @@ class ScrapeResult(models.Model):
         flatten = lambda t: [item for sublist in t for item in sublist]
         keywords = flatten(keywords)
 
-        thread = threading.Thread(target=self.create_scrape_result_pages, args=[keywords])
-        thread.start()
+        if len(ScrapeResultPage.objects.filter(scrape_result_id=self.id)) == 0:
+            thread = threading.Thread(target=self.create_scrape_result_pages, args=[keywords])
+            thread.start()
 
         # Keyword Amount Saving
         self.keyword_amount = len(keywords)
-
-        # Report Generation
-        # TODO: Implement report generation
 
         # Save keywords file
         if self.pk is None:
@@ -72,6 +71,23 @@ class ScrapeResult(models.Model):
 
     def create_scrape_result_pages(self, keywords):
         """ Create scrape result page """
+        time_start = time.time()
+        report_content = [
+            '<?xml version="1.0" encoding="UTF-8" ?>',
+            '',
+            '<scrape-result>',
+            '\t<general-info>',
+            '\t\t<id>{}</id>'.format(self.id),
+            '\t\t<user-id>{}</user-id>'.format(self.user.id),
+            '\t\t<user-username>{}</user-username>'.format(self.user.username),
+            '\t\t<created-at>{}</created-at>'.format(get_simpler_datetime(str(self.created_at))),
+            '\t\t<time-taken>{}</time-taken>',
+            '\t\t<keyword-amount>{}</keyword-amount>'.format(len(keywords)),
+            '\t</general-info>',
+            '',
+            '\t<scrape-result-page-list>',
+        ]
+
         for i in keywords:
             # Scrape result
             result_page = scrape_results(i)
@@ -87,22 +103,78 @@ class ScrapeResult(models.Model):
                 scrape_result_id=self.id
             )
 
+            # Report - Part 1
+            report_content += [
+                '\t\t<scrape-result-page>',
+                '\t\t\t<keyword>{}</keyword>'.format(i),
+                '\t\t\t<adwords-result-amount>{}</adwords-result-amount>',
+                '\t\t\t<non-adwords-result-amount>{}</non-adwords-result-amount>',
+                '\t\t\t<scrape-result-item-list>'
+            ]
+
             # Create scrape result item object (AdWords)
             for j in result_page['ad_list']:
-                ScrapeResultItem.objects.create(
+                scrape_result_item = ScrapeResultItem.objects.create(
                     title=j['title'], url=j['url'], text=j['text'], is_adwords=True,
                     scrape_result_page_id=scrape_result_page.id
                 )
+                # Report - Part 2.1
+                report_content += [
+                    '\t\t\t\t<scrape-result-item>',
+                    '\t\t\t\t\t<title>![CDATA[{}]]</title>'.format(scrape_result_item.title),
+                    '\t\t\t\t\t<url>![CDATA[{}]]</url>'.format(scrape_result_item.url),
+                    '\t\t\t\t\t<text>![CDATA[{}]]</text>'.format(scrape_result_item.text),
+                    '\t\t\t\t\t<is-adwords>1</is-adwords>',
+                    '\t\t\t\t</scrape-result-item>'
+                ]
 
             # Create scrape result item object (Non-AdWords)
             for j in result_page['result_list']:
-                ScrapeResultItem.objects.create(
+                scrape_result_item = ScrapeResultItem.objects.create(
                     title=j['title'], url=j['url'], text=j['text'], is_adwords=False,
                     scrape_result_page_id=scrape_result_page.id
                 )
+                # Report - Part 2.2
+                report_content += [
+                    '\t\t\t\t<scrape-result-item>',
+                    '\t\t\t\t\t<title><![CDATA[{}]]></title>'.format(scrape_result_item.title.replace('\n', str())),
+                    '\t\t\t\t\t<url><![CDATA[{}]]></url>'.format(scrape_result_item.url.replace('\n', str())),
+                    '\t\t\t\t\t<text><![CDATA[{}]]></text>'.format(scrape_result_item.text.replace('\n', str())),
+                    '\t\t\t\t\t<is-adwords>0</is-adwords>',
+                    '\t\t\t\t</scrape-result-item>'
+                ]
 
-            # Delay
-            time.sleep(2)
+            # Report - Part 3
+            report_content += [
+                '\t\t\t</scrape-result-item-list>',
+                '\t\t</scrape-result-page>'
+            ]
+
+            # Report - Part 4
+            _ = report_content.index('\t\t\t<adwords-result-amount>{}</adwords-result-amount>')
+            report_content[_] = report_content[_].format(
+                len(ScrapeResultItem.objects.filter(scrape_result_page_id=scrape_result_page.id, is_adwords=True))
+            )
+            _ = report_content.index('\t\t\t<non-adwords-result-amount>{}</non-adwords-result-amount>')
+            report_content[_] = report_content[_].format(
+                len(ScrapeResultItem.objects.filter(scrape_result_page_id=scrape_result_page.id, is_adwords=False))
+            )
+
+            # Delay (seconds)
+            time.sleep(DELAY_BETWEEN_PAGES)
+
+        # Report - Ending
+        report_content += [
+            '\t</scrape-result-page-list>',
+            '</scrape-result>',
+            ''
+        ]
+        _ = report_content.index('\t\t<time-taken>{}</time-taken>')
+        report_content[_] = report_content[_].format(time.time() - time_start)
+
+        # Save Report
+        self.report = ContentFile(('\n\r'.join(report_content)).encode('utf-8'), name='report.xml')
+        self.save()
 
 
 class ScrapeResultPage(models.Model):

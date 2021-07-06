@@ -62,7 +62,7 @@ python manage.py makemigrations
 ```
 
 ### Migration
-After it is done, migration files will be generated. Keep your Command Prompt or Terminal windows open, do not change the directory, then type the following command and hit the *ENTER* key.
+After it is done, migration files will be generated. Keep your Command Prompt or Terminal window open, do not change the directory, then type the following command and hit the *ENTER* key.
 
 ```
 python manage.py migrate
@@ -87,7 +87,7 @@ python manage.py runserver
 ```
 
 ### Stopping
-To stop the project, simply press the `CTRL` and `C` key simultaneously in the Command Prompt or Terminal windows that is running the project.
+To stop the project, simply press the `CTRL` and `C` key simultaneously in the Command Prompt or Terminal window that is running the project.
 
 ## Pages
 In this way, the project will be run in the localhost, which can be accessed via the browser by typing this URL.

@@ -113,7 +113,7 @@ Use `GET /api/user/user` to list users.
 
 Use `GET /api/user/user/<int>` to retrieve a single user by ID.
 
-User `GET /api/user/login` to login. This will return a token that can be used in authentication when using other APIs.
+User `POST /api/user/login` to login. This will return a token that can be used in authentication when using other APIs.
 
 ### Extractor Application APIs
 The extractor application contains 3 models, a scrape result, a scrape result page, and a scrape result item. All 3, including the user model, are related in a nested relationship, simply a tree data structure.
